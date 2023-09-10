@@ -1,0 +1,16 @@
+version: "3"
+services:
+  api:
+    image: node:18
+    working_dir: /code
+    volumes:
+      - type: bind
+        source: ../
+        target: /code
+
+  db:
+    image: postgres:12.4
+    environment:
+      - POSTGRES_USER=admin
+    volumes:
+      - "../migration:/docker-entrypoint-initdb.d/:ro"
