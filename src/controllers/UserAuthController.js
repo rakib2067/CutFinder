@@ -17,8 +17,10 @@ async function register(req, res) {
     newUser.password = await bcrypt.hash(password, salt);
 
     await UserService.createUser(newUser);
+    console.log(`new user: ${newUser}`);
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
+    console.log(`Error Registering: ${err}`);
     res.status(500).json(err);
   }
 }
@@ -40,9 +42,11 @@ async function login(req, res) {
     }
 
     req.session.user = user;
+    console.log(`Authenticated User: ${user}`);
 
     res.status(200).json(user);
   } catch (err) {
+    console.log(`Error Logging In: ${err}`);
     res.status(500).json(err);
   }
 }
