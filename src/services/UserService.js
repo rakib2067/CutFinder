@@ -1,6 +1,5 @@
 const db = require("../config/db");
 const { User } = require("../models");
-const { EmailExistsError, UserNotFoundError } = require("../errors");
 
 class UserService {
   static async getUserById(id) {
@@ -11,7 +10,7 @@ class UserService {
       );
 
       if (userData.rows.length === 0) {
-        throw new UserNotFoundError(`User not found for email: ${email}`);
+        return null;
       }
 
       return new User(userData.rows[0]);
