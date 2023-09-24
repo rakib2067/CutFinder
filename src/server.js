@@ -6,7 +6,6 @@ const { session } = require("./middlewares");
 
 const server = express();
 
-server.set("trust proxy", 1);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(cors());
