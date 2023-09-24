@@ -7,4 +7,8 @@ docker rm $(docker ps -a -q)
 # Remove all volumes
 docker volume rm $(docker volume ls -q)
 
-echo "All Docker containers and volumes have been deleted."
+# Remove all networks
+
+docker network prune
+
+echo "All Docker containers, networks and volumes have been deleted."
