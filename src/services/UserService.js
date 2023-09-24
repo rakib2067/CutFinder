@@ -1,5 +1,6 @@
 const db = require("../config/db");
-const User = require("./User");
+const { User } = require("../models");
+const { EmailExistsError, UserNotFoundError } = require("../errors");
 
 class UserService {
   static async getUserById(id) {
@@ -8,21 +9,42 @@ class UserService {
         `SELECT * FROM users WHERE users.id = $1;`,
         [id]
       );
+
+      if (userData.rows.length === 0) {
+        throw new UserNotFoundError(`User not found for email: ${email}`);
+      }
+
       return new User(userData.rows[0]);
+    } catch (err) {
+      throw new Error(`Error fetching user: ${err}`);
+    }
+  }
+  static async getUserByEmail(email) {
+    try {
+      const userData = await db.query(
+        `SELECT * FROM users WHERE users.email = $1;`,
+        [email]
+      );
+
+      if (userData.rows.length === 0) {
+        return null;
+      }
+
+      const user = new User(userData.rows[0]);
+      return user;
     } catch (err) {
       throw new Error(`Error fetching user: ${err}`);
     }
   }
 
   static async createUser(userData) {
-    const { username, email, fullName, password, phoneNumber } = userData;
+    const { username, email, password } = userData;
     try {
       const result = await db.query(
-        `INSERT INTO users (username, email, fullName, password, phoneNumber) VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
-        [username, email, fullName, password, phoneNumber]
+        `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *;`,
+        [username, email, password]
       );
       console.log(`User created with ID: ${result.rows[0].id}`);
-      return new User(result.rows[0]);
     } catch (err) {
       throw new Error(`Error creating user: ${err}`);
     }
