@@ -4,8 +4,6 @@ class User {
     this.username = data.username;
     this.email = data.email;
     this.password = data.password;
-    this.fullName = data.fullName;
-    this.phoneNumber = data.phoneNumber;
   }
 }
 
