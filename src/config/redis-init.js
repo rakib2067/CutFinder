@@ -1,8 +1,11 @@
-const redis = require("redis");
+const Redis = require("ioredis");
 
-const redisClient = redis.createClient({
-  port: 6379,
-  host: "localhost",
+const isProduction = process.env.NODE_ENV === "production";
+
+const redisClient = new Redis({
+  host: isProduction ? process.env.REDIS_HOST : "redis",
+  port: isProduction ? process.env.REDIS_PORT : 6379,
+  password: isProduction ? process.env.REDIS_PASSWORD : null,
 });
 
 module.exports = redisClient;
