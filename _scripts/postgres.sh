@@ -1,0 +1,1 @@
+docker exec -it dev_db psql -U admin -d cutfinder_dev
