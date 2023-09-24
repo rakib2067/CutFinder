@@ -1,6 +1,7 @@
 const { Pool } = require("pg");
 
 let pool;
+console.log(process.env);
 if (process.env.NODE_ENV === "production") {
   // Production database connection details from environment variables
   pool = new Pool({
