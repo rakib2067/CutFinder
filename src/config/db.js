@@ -1,7 +1,6 @@
 const { Pool } = require("pg");
 
 let pool;
-console.log(process.env);
 if (process.env.NODE_ENV === "production") {
   // Production database connection details from environment variables
   pool = new Pool({
@@ -16,4 +15,15 @@ if (process.env.NODE_ENV === "production") {
   pool = new Pool({ database: process.env.PGDATABASE_DEV });
 }
 
+async function connectToPg() {
+  try {
+    const client = await pool.connect();
+    await client.query("SELECT * FROM users;");
+    client.release();
+  } catch (err) {
+    console.log("Error connecting to PG: ", err);
+  }
+}
+
+connectToPg();
 module.exports = pool;
