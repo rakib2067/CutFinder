@@ -9,6 +9,10 @@ if (process.env.NODE_ENV === "production") {
     password: process.env.RDS_PASSWORD,
     port: process.env.RDS_PORT,
     host: process.env.RDS_HOSTNAME,
+    ssl: {
+      // Enable SSL/TLS encryption
+      rejectUnauthorized: true, // Set to true to reject self-signed certificates
+    },
   });
 } else {
   // Development database connection details
