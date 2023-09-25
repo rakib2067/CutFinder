@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === "production") {
     host: process.env.RDS_HOSTNAME,
     ssl: {
       // Enable SSL/TLS encryption
-      rejectUnauthorized: true, // Set to true to reject self-signed certificates
+      rejectUnauthorized: false, // Set to true to reject self-signed certificates
     },
   });
 } else {
