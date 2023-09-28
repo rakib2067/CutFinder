@@ -1,4 +1,4 @@
-INSERT INTO users (username, email, password)
+INSERT INTO users (full_name, email, password)
 VALUES
 ('Rakib','a@a.cob', 'pass'),
 ('Ismael','i@i.cob', 'pass'),
@@ -12,9 +12,13 @@ VALUES
 ('John Cena','jc@jc.cob', 'pass'),
 ('Mat','m@m.cob', 'pass');
 
-INSERT INTO barbershops (shopname, address, storenumber)
+INSERT INTO barbershops (shop_name, store_number)
 VALUES
-('Smokeys Barbers', '128 Windsor Road', '02082329323');
+('Smokeys Barbers', '02082329323');
+
+INSERT INTO addresses (barbershop_id, street_address, city, postal_code)
+VALUES
+(1, '120 Windsor Road', 'London', 'E70EJ');
 
 INSERT INTO barbers (user_id, barbershop_id)
 VALUES
