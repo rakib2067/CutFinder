@@ -1,4 +1,4 @@
-const { UserService } = require("../services");
+const { UserAuthService, UserService } = require("../services");
 const bcrypt = require("bcrypt");
 
 async function register(req, res) {
@@ -16,7 +16,7 @@ async function register(req, res) {
     const salt = await bcrypt.genSalt(10);
     newUser.password = await bcrypt.hash(password, salt);
 
-    await UserService.createUser(newUser);
+    await UserAuthService.createUser(newUser);
     console.log(`new user: ${newUser}`);
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
@@ -42,7 +42,7 @@ async function login(req, res) {
     }
 
     req.session.user = user;
-    console.log(`Authenticated User: ${user}`);
+    console.log("Authenticated User: ", user);
 
     res.status(200).json(user);
   } catch (err) {

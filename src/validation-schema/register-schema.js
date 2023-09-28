@@ -1,7 +1,7 @@
 const { body } = require("express-validator");
 
 const registrationValidationSchema = [
-  body("username", "Username is required").not().isEmpty(),
+  body("fullName", "Full Name is required").not().isEmpty(),
   body("email", "Please include a valid email").isEmail(),
   body(
     "password",

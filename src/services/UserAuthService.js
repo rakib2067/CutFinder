@@ -1,38 +1,28 @@
 const db = require("../config/db");
 const { User } = require("../models");
 
-class UserService {
-  static async getUserById(id) {
+class UserAuthService {
+  static async createUser(userData) {
+    const { fullName, email, password } = userData;
     try {
-      const userData = await db.query(
-        `SELECT * FROM users WHERE users.user_id = $1;`,
-        [id]
+      const result = await db.query(
+        `INSERT INTO users (full_name, email, password) VALUES ($1, $2, $3) RETURNING *;`,
+        [fullName, email, password]
       );
-
-      if (userData.rows.length === 0) {
-        return null;
-      }
-
-      return new User(userData.rows[0]);
+      console.log(`User created with ID: ${result.rows[0].id}`);
     } catch (err) {
-      throw new Error(`Error fetching user: ${err}`);
+      throw new Error(`Error creating user: ${err}`);
     }
   }
-  static async getUserByEmail(email) {
+  static async deleteUser(id) {
     try {
-      const userData = await db.query(
-        `SELECT * FROM users WHERE users.email = $1;`,
-        [email]
+      const result = await db.query(
+        "DELETE FROM users WHERE user_id = $1 RETURNING user_id;",
+        [id]
       );
-
-      if (userData.rows.length === 0) {
-        return null;
-      }
-
-      const user = new User(userData.rows[0]);
-      return user;
+      return `Successfully deleted user: ${result.rows[0].id}`;
     } catch (err) {
-      throw new Error(`Error fetching user: ${err}`);
+      throw new Error(`Error deleting user: ${err}`);
     }
   }
 
@@ -61,4 +51,4 @@ class UserService {
   }
 }
 
-module.exports = UserService;
+module.exports = UserAuthService;
