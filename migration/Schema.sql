@@ -17,6 +17,15 @@ CREATE TABLE barbershops
     store_number VARCHAR(100) NOT NULL UNIQUE
 );
 
+DROP TABLE IF EXISTS barbershop_managers;
+
+CREATE TABLE barbershop_managers
+(
+    user_id INT REFERENCES users (user_id) ON DELETE CASCADE,
+    barbershop_id INT REFERENCES barbershops (barbershop_id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, barbershop_id)
+);
+
 DROP TABLE IF EXISTS barbers;
 
 CREATE TABLE barbers
@@ -26,11 +35,22 @@ CREATE TABLE barbers
     barbershop_id INT REFERENCES barbershops(barbershop_id)
 );
 
-DROP TABLE IF EXISTS addresses;
+DROP TABLE IF EXISTS barbershop_addresses;
 
-CREATE TABLE addresses (
+CREATE TABLE barbershop_addresses (
     address_id SERIAL PRIMARY KEY,
     barbershop_id INT REFERENCES barbershops(barbershop_id) ON DELETE CASCADE,
+    street_address VARCHAR(255),
+    city VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) DEFAULT 'United Kingdom'
+);
+
+DROP TABLE IF EXISTS user_addresses;
+
+CREATE TABLE user_addresses (
+    address_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
     street_address VARCHAR(255),
     city VARCHAR(100) NOT NULL,
     postal_code VARCHAR(20) NOT NULL,
@@ -56,9 +76,9 @@ CREATE TABLE bookings
     barber_id INT REFERENCES barbers(barber_id)
 );
 
-DROP TABLE IF EXISTS barberSkills;
+DROP TABLE IF EXISTS barber_skills;
 
-CREATE TABLE barberSkills
+CREATE TABLE barber_skills
 (
     hairstyle_id INT REFERENCES hairstyles(hairstyle_id),
     barber_id INT REFERENCES barbers(barber_id),
@@ -68,7 +88,7 @@ CREATE TABLE barberSkills
 
 DROP TABLE IF EXISTS barbershopPrices;
 
-CREATE TABLE barbershopPrices 
+CREATE TABLE barbershop_prices 
 (
     hairstyle_id INT REFERENCES hairstyles(hairstyle_id),
     barbershop_id INT REFERENCES barbershops(barbershop_id),
