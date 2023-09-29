@@ -1,5 +1,15 @@
-const registrationSchema = require("./register-schema");
+const userRegistrationSchema = require("./user-register-schema");
+const barbershopSchema = require("./barbershop-schema");
+const addresSchema = require("./address-schema");
 
+const barbershopManagerSchema = [
+  ...userRegistrationSchema,
+  ...addresSchema,
+  ...barbershopSchema,
+];
 module.exports = {
-  registrationSchema,
+  userRegistrationSchema,
+  barbershopSchema,
+  addresSchema,
+  barbershopManagerSchema,
 };
