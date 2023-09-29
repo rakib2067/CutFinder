@@ -41,8 +41,8 @@ CREATE TABLE barbershop_addresses (
     address_id SERIAL PRIMARY KEY,
     barbershop_id INT REFERENCES barbershops(barbershop_id) ON DELETE CASCADE,
     street_address VARCHAR(255),
-    city VARCHAR(100) NOT NULL,
-    postal_code VARCHAR(20) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    postal_code VARCHAR(10) NOT NULL,
     country VARCHAR(100) DEFAULT 'United Kingdom'
 );
 
@@ -52,8 +52,8 @@ CREATE TABLE user_addresses (
     address_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
     street_address VARCHAR(255),
-    city VARCHAR(100) NOT NULL,
-    postal_code VARCHAR(20) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    postal_code VARCHAR(10) NOT NULL,
     country VARCHAR(100) DEFAULT 'United Kingdom'
 );
 

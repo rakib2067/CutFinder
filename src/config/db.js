@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
 async function connectToPg() {
   try {
     const client = await pool.connect();
-    await client.query("SELECT * FROM users;");
+    await client.query("SELECT NOW();");
     client.release();
   } catch (err) {
     console.log("Error connecting to PG: ", err);
