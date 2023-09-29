@@ -2,10 +2,10 @@ const db = require("../config/db");
 const { User } = require("../models");
 
 class UserAuthService {
-  static async createUser(userData) {
+  static async createUser(client, userData) {
     const { fullName, email, password } = userData;
     try {
-      const result = await db.query(
+      const result = await client.query(
         `INSERT INTO users (full_name, email, password) VALUES ($1, $2, $3) RETURNING *;`,
         [fullName, email, password]
       );

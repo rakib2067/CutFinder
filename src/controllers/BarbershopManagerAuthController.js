@@ -4,8 +4,12 @@ const bcrypt = require("bcrypt");
 
 async function register(req, res) {
   const { email, password } = req.body;
+  const client = await pool.connect();
+
   try {
-    let user = await UserService.getUserByEmail(pool, email);
+    await client.query("BEGIN");
+
+    let user = await UserService.getUserByEmail(client, email);
 
     if (user) {
       return res.status(400).json({ errors: [{ msg: "User already exists" }] });
@@ -14,20 +18,23 @@ async function register(req, res) {
     const newUser = { ...req.body };
     const salt = await bcrypt.genSalt(10);
     newUser.password = await bcrypt.hash(password, salt);
-
-    await UserAuthService.createUser(pool, newUser);
-    console.log(`Created new user: ${newUser}`);
+    await UserAuthService.createUser(client, newUser);
+    console.log(`new user: ${newUser}`);
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
+    await client.query("ROLLBACK");
     console.log(`Error Registering: ${err}`);
     res.status(500).json(err);
+  } finally {
+    client.release();
   }
 }
 
 async function login(req, res) {
   const { email, password } = req.body;
+  console.log(req.body);
   try {
-    let user = await UserService.getUserByEmail(pool, email);
+    let user = await UserService.getUserByEmail(email);
 
     if (!user) {
       return res.status(401).json({ errors: [{ msg: "User not found" }] });

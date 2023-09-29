@@ -1,5 +1,5 @@
 const db = require("../config/db");
-const { User } = require("../models");
+const { Barbershop } = require("../models");
 
 class UserService {
   static async getUserById(id) {
