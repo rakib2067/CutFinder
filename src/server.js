@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const routes = require("./routes");
-const { session } = require("./middlewares");
+const { session, errorHandler } = require("./middlewares");
 
 const server = express();
 
@@ -22,5 +22,6 @@ server.get("/", (req, res) =>
   )
 );
 server.use(routes);
+server.use(errorHandler);
 
 module.exports = server;
