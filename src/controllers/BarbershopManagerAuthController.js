@@ -1,9 +1,22 @@
-const { UserAuthService, UserService } = require("../services");
+const {
+  UserAuthService,
+  UserService,
+  BarbershopService,
+} = require("../services");
 const pool = require("../config/db");
 const bcrypt = require("bcrypt");
 
 async function register(req, res) {
-  const { email, password } = req.body;
+  const {
+    fullName,
+    email,
+    password,
+    shopName,
+    storeNumber,
+    streetAddress,
+    city,
+    postalCode,
+  } = req.body;
   const client = await pool.connect();
 
   try {
@@ -18,8 +31,15 @@ async function register(req, res) {
     const newUser = { ...req.body };
     const salt = await bcrypt.genSalt(10);
     newUser.password = await bcrypt.hash(password, salt);
-    await UserAuthService.createUser(client, newUser);
-    console.log(`new user: ${newUser}`);
+    user = await UserAuthService.createUser(client, newUser);
+
+    //Check if address already exists
+    const barbershop = await BarbershopService.createBarbershop(
+      client,
+      req.body
+    );
+
+    await BarbershopService.createBarbershop(client, req.body);
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     await client.query("ROLLBACK");

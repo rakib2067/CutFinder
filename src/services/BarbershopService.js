@@ -1,42 +1,39 @@
 const db = require("../config/db");
 const { Barbershop } = require("../models");
 
-class UserService {
-  static async getUserById(id) {
+class BarbershopService {
+  static async getBarbershopById(id) {
     try {
-      const userData = await db.query(
-        `SELECT * FROM users WHERE users.user_id = $1;`,
+      const barbershopData = await db.query(
+        `SELECT * FROM barbershops WHERE barbershops.barbershop_id = $1;`,
         [id]
       );
 
-      if (userData.rows.length === 0) {
+      if (barbershopData.rows.length === 0) {
         return null;
       }
 
-      return new User(userData.rows[0]);
+      return new Barbershop(barbershopData.rows[0]);
     } catch (err) {
-      throw new Error(`Error fetching user: ${err}`);
+      throw new Error(`Error fetching barbershop: ${err}`);
     }
   }
-  static async getUserByEmail(client, email) {
+
+  static async createBarbershop(client, barbershopData) {
+    const { storeName, storeNumber } = barbershopData;
     try {
-      const userData = await client.query(
-        `SELECT * FROM users WHERE users.email = $1;`,
-        [email]
+      const result = await client.query(
+        `INSERT INTO barbershops (store_name, store_number) VALUES ($1, $2) RETURNING *;`,
+        [storeName, storeNumber]
       );
-
-      if (userData.rows.length === 0) {
-        return null;
-      }
-
-      const user = new User(userData.rows[0]);
-      return user;
-    } catch (err) {
-      throw new Error(`Error fetching user: ${err}`);
+      console.log(`Barbershop created with ID: ${result.rows[0].id}`);
+      return new Barbershop(result.rows[0]);
+    } catch (error) {
+      throw new Error(`Error creating barbershop: ${err}`);
     }
   }
 
-  static async updateUser(userId, updateData) {
+  static async updateBarbershop(barbershopId, updateData) {
     const fieldsToUpdate = Object.keys(updateData);
 
     const fieldsToUpdateQuery = fieldsToUpdate
@@ -46,19 +43,19 @@ class UserService {
       .join(", ");
 
     const values = fieldsToUpdate.map((field) => updateData[field]);
-    values.push(userId);
+    values.push(barbershopId);
 
     try {
       const result = await db.query(
-        `UPDATE users SET ${fieldsToUpdateQuery} WHERE id = $${values.length} RETURNING *;`,
+        `UPDATE barbershops SET ${fieldsToUpdateQuery} WHERE id = $${values.length} RETURNING *;`,
         values
       );
 
-      return new User(result.rows[0]);
+      return new Barbershop(result.rows[0]);
     } catch (err) {
-      throw new Error(`Error updating user: ${err}`);
+      throw new Error(`Error updating barbershop: ${err}`);
     }
   }
 }
 
-module.exports = UserService;
+module.exports = BarbershopService;

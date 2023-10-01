@@ -10,6 +10,7 @@ class UserAuthService {
         [fullName, email, password]
       );
       console.log(`User created with ID: ${result.rows[0].id}`);
+      return result.rows[0];
     } catch (err) {
       throw new Error(`Error creating user: ${err}`);
     }
