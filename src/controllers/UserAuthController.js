@@ -1,42 +1,32 @@
 const { UserAuthService, UserService } = require("../services");
 const pool = require("../config/db");
 const bcrypt = require("bcrypt");
+const { NotFoundError, UnauthorizedError } = require("../errors");
+const { validateAndCreateUser } = require("../utils");
 
-async function register(req, res) {
-  const { email, password } = req.body;
+async function register(req, res, next) {
   try {
-    let user = await UserService.getUserByEmail(pool, email);
-
-    if (user) {
-      return res.status(400).json({ errors: [{ msg: "User already exists" }] });
-    }
-
-    const newUser = { ...req.body };
-    const salt = await bcrypt.genSalt(10);
-    newUser.password = await bcrypt.hash(password, salt);
-
-    await UserAuthService.createUser(pool, newUser);
-    console.log(`Created new user: ${newUser}`);
+    const newUser = await validateAndCreateUser(pool, req.body);
+    console.log("Created new user: ", newUser);
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
-    console.log(`Error Registering: ${err}`);
-    res.status(500).json(err);
+    next(err);
   }
 }
 
-async function login(req, res) {
+async function login(req, res, next) {
   const { email, password } = req.body;
   try {
     let user = await UserService.getUserByEmail(pool, email);
 
     if (!user) {
-      return res.status(401).json({ errors: [{ msg: "User not found" }] });
+      throw new NotFoundError("User");
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {
-      return res.status(401).json({ errors: [{ msg: "Invalid password" }] });
+      throw new UnauthorizedError("Invalid Password");
     }
 
     req.session.user = user;
@@ -44,8 +34,7 @@ async function login(req, res) {
 
     res.status(200).json(user);
   } catch (err) {
-    console.log(`Error Logging In: ${err}`);
-    res.status(500).json(err);
+    next(err);
   }
 }
 

@@ -9,7 +9,7 @@ class UserAuthService {
         `INSERT INTO users (full_name, email, password) VALUES ($1, $2, $3) RETURNING *;`,
         [fullName, email, password]
       );
-      console.log(`User created with ID: ${result.rows[0].id}`);
+      console.log(`User created with ID: ${result.rows[0].user_id}`);
       return result.rows[0];
     } catch (err) {
       throw new Error(`Error creating user: ${err}`);

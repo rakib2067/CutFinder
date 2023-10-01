@@ -15,8 +15,8 @@ class UnauthorizedError extends BaseError {
 }
 
 class NotFoundError extends BaseError {
-  constructor(message) {
-    super("NotFoundError", 404, message);
+  constructor(property) {
+    super("NotFoundError", 404, `${property} not found`);
   }
 }
 class ConflictError extends BaseError {
