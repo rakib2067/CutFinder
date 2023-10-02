@@ -7,7 +7,6 @@ function isValidUKPhoneNumber(phoneNumber) {
 
 const barbershopValidationSchema = [
   body("shopName", "Shop Name is required").not().isEmpty(),
-
   body("storeNumber")
     .not()
     .isEmpty()
@@ -18,8 +17,6 @@ const barbershopValidationSchema = [
       }
       return true;
     }),
-
-  body("shopName", "Shop Name is required").not().isEmpty(),
 ];
 
 module.exports = barbershopValidationSchema;

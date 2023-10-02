@@ -1,6 +1,6 @@
 const { body } = require("express-validator");
 
-const userregistrationValidationSchema = [
+const userRegistrationValidationSchema = [
   body("fullName", "Full Name is required").not().isEmpty(),
 
   body("email")
@@ -18,4 +18,4 @@ const userregistrationValidationSchema = [
     .withMessage("Please enter a password with 6 or more characters"),
 ];
 
-module.exports = userregistrationValidationSchema;
+module.exports = userRegistrationValidationSchema;

@@ -2,49 +2,55 @@ const {
   UserAuthService,
   UserService,
   BarbershopService,
+  BarbershopAddressService,
 } = require("../services");
+const { ConflictError } = require("../errors");
+const {
+  validateAndCreateUser,
+  startTransaction,
+  commitTransaction,
+  rollbackTransaction,
+} = require("../utils");
 const pool = require("../config/db");
 const bcrypt = require("bcrypt");
 
-async function register(req, res) {
-  const {
-    fullName,
-    email,
-    password,
-    shopName,
-    storeNumber,
-    streetAddress,
-    city,
-    postalCode,
-  } = req.body;
+async function register(req, res, next) {
   const client = await pool.connect();
 
   try {
-    await client.query("BEGIN");
+    await startTransaction(client);
 
-    let user = await UserService.getUserByEmail(client, email);
+    const newUser = await validateAndCreateUser(client, req.body);
+    let barbershopAddress = await BarbershopAddressService.checkExistingAddress(
+      client,
+      req.body
+    );
 
-    if (user) {
-      return res.status(400).json({ errors: [{ msg: "User already exists" }] });
+    if (barbershopAddress) {
+      throw new ConflictError("Address");
     }
 
-    const newUser = { ...req.body };
-    const salt = await bcrypt.genSalt(10);
-    newUser.password = await bcrypt.hash(password, salt);
-    user = await UserAuthService.createUser(client, newUser);
-
-    //Check if address already exists
     const barbershop = await BarbershopService.createBarbershop(
       client,
       req.body
     );
 
-    await BarbershopService.createBarbershop(client, req.body);
-    res.status(201).json({ message: "User registered successfully" });
+    barbershopAddress = await BarbershopAddressService.createBarbershopAddress(
+      client,
+      req.body,
+      barbershop.id
+    );
+
+    await commitTransaction(client);
+    res
+      .status(201)
+      .json({
+        message: `Succesfully registered user: ${newUser.fullName}, and created ${barbershop.shopName}`,
+      });
   } catch (err) {
-    await client.query("ROLLBACK");
-    console.log(`Error Registering: ${err}`);
-    res.status(500).json(err);
+    console.log("Error registering: ", err);
+    await rollbackTransaction(client);
+    next(err);
   } finally {
     client.release();
   }

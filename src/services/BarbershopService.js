@@ -20,11 +20,11 @@ class BarbershopService {
   }
 
   static async createBarbershop(client, barbershopData) {
-    const { storeName, storeNumber } = barbershopData;
+    const { shopName, storeNumber } = barbershopData;
     try {
       const result = await client.query(
-        `INSERT INTO barbershops (store_name, store_number) VALUES ($1, $2) RETURNING *;`,
-        [storeName, storeNumber]
+        `INSERT INTO barbershops (shop_name, store_number) VALUES ($1, $2) RETURNING *;`,
+        [shopName, storeNumber]
       );
       console.log(`Barbershop created with ID: ${result.rows[0].id}`);
       return new Barbershop(result.rows[0]);

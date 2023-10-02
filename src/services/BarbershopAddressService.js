@@ -1,8 +1,8 @@
-const db = require("../config/db");
 const { BarbershopAddress } = require("../models");
 
 class BarbershopAddressService {
-  static async checkExistingAddress(client, streetAddress, city, postalCode) {
+  static async checkExistingAddress(client, addressData) {
+    const { streetAddress, city, postalCode } = addressData;
     try {
       const result = await client.query(
         `SELECT * FROM barbershop_addresses 
@@ -20,19 +20,13 @@ class BarbershopAddressService {
     }
   }
 
-  static async createBarbershopAddress(
-    client,
-    barbershopId,
-    streetAddress,
-    city,
-    postalCode,
-    country
-  ) {
+  static async createBarbershopAddress(client, addressData, barbershopId) {
+    const { streetAddress, city, postalCode } = addressData;
     try {
       const result = await client.query(
-        `INSERT INTO barbershop_addresses (barbershop_id, street_address, city, postal_code, country) 
-         VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
-        [barbershopId, streetAddress, city, postalCode, country]
+        `INSERT INTO barbershop_addresses (barbershop_id, street_address, city, postal_code) 
+         VALUES ($1, $2, $3, $4) RETURNING *;`,
+        [barbershopId, streetAddress, city, postalCode]
       );
 
       console.log(`Barbershop address created with ID: ${result.rows[0].id}`);

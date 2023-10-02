@@ -1,4 +1,4 @@
-const { BarberAuthController } = require("../../controllers");
+const { BarbershopManagerAuthController } = require("../../controllers");
 const { barbershopManagerSchema } = require("../../validation-schema");
 const { validateRequestSchema } = require("../../middlewares");
 
@@ -9,9 +9,9 @@ router.post(
   "/register",
   barbershopManagerSchema,
   validateRequestSchema,
-  BarberAuthController.register
+  BarbershopManagerAuthController.register
 );
 
-router.post("/login", BarberAuthController.login);
+// router.post("/login", BarberAuthController.login);
 
 module.exports = router;
