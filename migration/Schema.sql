@@ -14,7 +14,7 @@ CREATE TABLE barbershops
 (
     barbershop_id serial PRIMARY KEY,
     shop_name VARCHAR(200) NOT NULL,
-    store_number VARCHAR(100) NOT NULL UNIQUE
+    store_number VARCHAR(100) NOT NULL 
 );
 
 DROP TABLE IF EXISTS barbershop_managers;
