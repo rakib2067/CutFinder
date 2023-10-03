@@ -15,11 +15,14 @@ async function validateAndCreateUser(pool, userData) {
     throw new ConflictError("User already exists");
   }
 
-  const newUser = { ...userData };
   const salt = await bcrypt.genSalt(10);
-  newUser.password = await bcrypt.hash(password, salt);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
-  await UserAuthService.createUser(pool, newUser);
+  const newUser = await UserAuthService.createUser(
+    pool,
+    userData,
+    hashedPassword
+  );
   return newUser;
 }
 

@@ -1,11 +1,14 @@
-const { BarbershopService, BarbershopAddressService } = require("../services");
+const {
+  BarbershopManagerService,
+  BarbershopService,
+  BarbershopAddressService,
+} = require("../services");
 const { ConflictError } = require("../errors");
 const {
   validateAndCreateUser,
   startTransaction,
   commitTransaction,
   rollbackTransaction,
-  authenticateUser,
 } = require("../utils");
 const pool = require("../config/db");
 
@@ -36,9 +39,15 @@ async function register(req, res, next) {
       barbershop.id
     );
 
+    await BarbershopManagerService.createManager(
+      client,
+      newUser.id,
+      barbershop.id
+    );
+
     await commitTransaction(client);
     res.status(201).json({
-      message: `Succesfully registered user: ${newUser.fullName}, and created ${barbershop.shopName}`,
+      message: `Succesfully registered manager: ${newUser.fullName}, for ${barbershop.shopName}`,
     });
   } catch (err) {
     console.log("Error registering: ", err);
@@ -49,19 +58,4 @@ async function register(req, res, next) {
   }
 }
 
-async function login(req, res, next) {
-  try {
-    let user = await authenticateUser(pool, req.body);
-
-    req.session.user = user;
-    req.session.isManager = true;
-
-    res.status(200).json(user);
-    console.log("Authenticated User: ", user);
-  } catch (err) {
-    console.log(`Error Logging In: ${err}`);
-    next(err);
-  }
-}
-
-module.exports = { register, login };
+module.exports = { register };

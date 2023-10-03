@@ -29,7 +29,9 @@ class BarbershopAddressService {
         [barbershopId, streetAddress, city, postalCode]
       );
 
-      console.log(`Barbershop address created with ID: ${result.rows[0].id}`);
+      console.log(
+        `Barbershop address created with ID: ${result.rows[0].address_id}`
+      );
       return new BarbershopAddress(result.rows[0]);
     } catch (error) {
       throw new Error(`Error creating barbershop address: ${error}`);

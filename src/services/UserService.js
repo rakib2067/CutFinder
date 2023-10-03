@@ -36,6 +36,41 @@ class UserService {
     }
   }
 
+  static async getManagerByUserId(client, userId) {
+    try {
+      const userData = await client.query(
+        `SELECT * FROM barbershop_managers WHERE barbershop_managers.user_id = $1;`,
+        [userId]
+      );
+
+      if (userData.rows.length === 0) {
+        return null;
+      }
+
+      const user = new User(userData.rows[0]);
+      return user;
+    } catch (error) {
+      throw new Error(`Error fetching user: ${err}`);
+    }
+  }
+  static async getBarberByUserId(client, userId) {
+    try {
+      const userData = await client.query(
+        `SELECT * FROM barbers WHERE barbers.user_id = $1;`,
+        [userId]
+      );
+
+      if (userData.rows.length === 0) {
+        return null;
+      }
+
+      const user = new User(userData.rows[0]);
+      return user;
+    } catch (error) {
+      throw new Error(`Error fetching user: ${err}`);
+    }
+  }
+
   static async updateUser(userId, updateData) {
     const fieldsToUpdate = Object.keys(updateData);
 

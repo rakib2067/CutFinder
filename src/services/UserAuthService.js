@@ -2,15 +2,15 @@ const db = require("../config/db");
 const { User } = require("../models");
 
 class UserAuthService {
-  static async createUser(client, userData) {
-    const { fullName, email, password } = userData;
+  static async createUser(client, userData, hashedPassword) {
+    const { fullName, email } = userData;
     try {
       const result = await client.query(
         `INSERT INTO users (full_name, email, password) VALUES ($1, $2, $3) RETURNING *;`,
-        [fullName, email, password]
+        [fullName, email, hashedPassword]
       );
       console.log(`User created with ID: ${result.rows[0].user_id}`);
-      return result.rows[0];
+      return new User(result.rows[0]);
     } catch (err) {
       throw new Error(`Error creating user: ${err}`);
     }

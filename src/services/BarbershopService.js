@@ -26,7 +26,9 @@ class BarbershopService {
         `INSERT INTO barbershops (shop_name, store_number) VALUES ($1, $2) RETURNING *;`,
         [shopName, storeNumber]
       );
-      console.log(`Barbershop created with ID: ${result.rows[0].id}`);
+      console.log(
+        `Barbershop created with ID: ${result.rows[0].barbershop_id}`
+      );
       return new Barbershop(result.rows[0]);
     } catch (error) {
       throw new Error(`Error creating barbershop: ${err}`);
