@@ -72,7 +72,7 @@ CREATE TABLE bookings
     booking_id serial PRIMARY KEY,
     booking_day VARCHAR(100),
     hairstyle_id INT REFERENCES hairstyles(hairstyle_id),
-    customer_id INT REFERENCES users(user_id),
+    customer_id INT REFERENCES users(user_id) ON DELETE CASCADE,
     barber_id INT REFERENCES barbers(barber_id)
 );
 
@@ -80,8 +80,8 @@ DROP TABLE IF EXISTS barber_skills;
 
 CREATE TABLE barber_skills
 (
-    hairstyle_id INT REFERENCES hairstyles(hairstyle_id),
-    barber_id INT REFERENCES barbers(barber_id),
+    hairstyle_id INT REFERENCES hairstyles(hairstyle_id) ON DELETE CASCADE,
+    barber_id INT REFERENCES barbers(barber_id) ON DELETE CASCADE,
     PRIMARY KEY (hairstyle_id, barber_id)
 
 );
@@ -90,8 +90,8 @@ DROP TABLE IF EXISTS barbershopPrices;
 
 CREATE TABLE barbershop_prices 
 (
-    hairstyle_id INT REFERENCES hairstyles(hairstyle_id),
-    barbershop_id INT REFERENCES barbershops(barbershop_id),
+    hairstyle_id INT REFERENCES hairstyles(hairstyle_id) ON DELETE CASCADE,
+    barbershop_id INT REFERENCES barbershops(barbershop_id) ON DELETE CASCADE,
     price DECIMAL(10, 2), 
     PRIMARY KEY (hairstyle_id, barbershop_id)
 );
