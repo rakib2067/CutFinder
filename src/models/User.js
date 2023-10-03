@@ -1,7 +1,7 @@
 class User {
   constructor(data) {
     this.id = data.user_id;
-    this.username = data.username;
+    this.fullName = data.full_name;
     this.email = data.email;
     this.password = data.password;
   }

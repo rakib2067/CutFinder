@@ -5,7 +5,7 @@ class UserService {
   static async getUserById(id) {
     try {
       const userData = await db.query(
-        `SELECT * FROM users WHERE users.id = $1;`,
+        `SELECT * FROM users WHERE users.user_id = $1;`,
         [id]
       );
 
@@ -18,9 +18,9 @@ class UserService {
       throw new Error(`Error fetching user: ${err}`);
     }
   }
-  static async getUserByEmail(email) {
+  static async getUserByEmail(client, email) {
     try {
-      const userData = await db.query(
+      const userData = await client.query(
         `SELECT * FROM users WHERE users.email = $1;`,
         [email]
       );
@@ -36,27 +36,38 @@ class UserService {
     }
   }
 
-  static async createUser(userData) {
-    const { username, email, password } = userData;
+  static async getManagerByUserId(client, userId) {
     try {
-      const result = await db.query(
-        `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *;`,
-        [username, email, password]
+      const userData = await client.query(
+        `SELECT * FROM barbershop_managers WHERE barbershop_managers.user_id = $1;`,
+        [userId]
       );
-      console.log(`User created with ID: ${result.rows[0].id}`);
-    } catch (err) {
-      throw new Error(`Error creating user: ${err}`);
+
+      if (userData.rows.length === 0) {
+        return null;
+      }
+
+      const user = new User(userData.rows[0]);
+      return user;
+    } catch (error) {
+      throw new Error(`Error fetching user: ${err}`);
     }
   }
-  static async deleteUser(id) {
+  static async getBarberByUserId(client, userId) {
     try {
-      const result = await db.query(
-        "DELETE FROM users WHERE id = $1 RETURNING id;",
-        [id]
+      const userData = await client.query(
+        `SELECT * FROM barbers WHERE barbers.user_id = $1;`,
+        [userId]
       );
-      return `Successfully deleted user: ${result.rows[0].id}`;
-    } catch (err) {
-      throw new Error(`Error deleting user: ${err}`);
+
+      if (userData.rows.length === 0) {
+        return null;
+      }
+
+      const user = new User(userData.rows[0]);
+      return user;
+    } catch (error) {
+      throw new Error(`Error fetching user: ${err}`);
     }
   }
 

@@ -1,4 +1,4 @@
-INSERT INTO users (username, email, password)
+INSERT INTO users (full_name, email, password)
 VALUES
 ('Rakib','a@a.cob', 'pass'),
 ('Ismael','i@i.cob', 'pass'),
@@ -10,11 +10,25 @@ VALUES
 ('Harry','h@h.cob', 'pass'),
 ('Terry','te@te.cob', 'pass'),
 ('John Cena','jc@jc.cob', 'pass'),
-('Mat','m@m.cob', 'pass');
+('Mat','m@m.cob', 'pass'),
+('Manager','manager@gmail.con', 'testing123');
 
-INSERT INTO barbershops (shopname, address, storenumber)
+
+INSERT INTO barbershops (shop_name, store_number)
 VALUES
-('Smokeys Barbers', '128 Windsor Road', '02082329323');
+('Smokeys Barbers', '02082329323');
+
+INSERT INTO barbershop_managers(user_id, barbershop_id)
+VALUES
+(11, 1);
+
+INSERT INTO user_addresses (user_id, street_address, city, postal_code)
+VALUES
+(4, '19 Mare street', 'London', 'E96NS');
+
+INSERT INTO barbershop_addresses (barbershop_id, street_address, city, postal_code)
+VALUES
+(1, '120 Windsor Road', 'London', 'E70EJ');
 
 INSERT INTO barbers (user_id, barbershop_id)
 VALUES
@@ -29,14 +43,14 @@ VALUES
 ('High Fade'),
 ('Medium Fade');
 
-INSERT INTO barbershopPrices (hairstyle_id, barbershop_id, price)
+INSERT INTO barbershop_prices (hairstyle_id, barbershop_id, price)
 VALUES
 (1,1, 10.00),
 (2,1, 15.00),
 (3,1, 25.00),
 (4,1, 20.00);
 
-INSERT INTO barberSkills (hairstyle_id, barber_id)
+INSERT INTO barber_skills (hairstyle_id, barber_id)
 VALUES
 (1, 1),
 (2, 1),

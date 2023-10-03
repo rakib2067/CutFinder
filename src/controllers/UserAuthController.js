@@ -1,53 +1,39 @@
+const pool = require("../config/db");
+const { validateAndCreateUser, authenticateUser } = require("../utils");
 const { UserService } = require("../services");
-const bcrypt = require("bcrypt");
-
-async function register(req, res) {
-  const { email, password } = req.body;
-  console.log(req.body);
-
+async function register(req, res, next) {
   try {
-    let user = await UserService.getUserByEmail(email);
-
-    if (user) {
-      return res.status(400).json({ errors: [{ msg: "User already exists" }] });
-    }
-
-    const newUser = { ...req.body };
-    const salt = await bcrypt.genSalt(10);
-    newUser.password = await bcrypt.hash(password, salt);
-
-    await UserService.createUser(newUser);
-    console.log(`new user: ${newUser}`);
+    const newUser = await validateAndCreateUser(pool, req.body);
+    console.log("Created new user: ", newUser);
     res.status(201).json({ message: "User registered successfully" });
-  } catch (err) {
-    console.log(`Error Registering: ${err}`);
-    res.status(500).json(err);
+  } catch (error) {
+    console.log("Failed to register");
+    next(error);
   }
 }
 
-async function login(req, res) {
-  const { email, password } = req.body;
-  console.log(req.body);
+async function login(req, res, next) {
   try {
-    let user = await UserService.getUserByEmail(email);
-
-    if (!user) {
-      return res.status(401).json({ errors: [{ msg: "User not found" }] });
-    }
-
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordMatch) {
-      return res.status(401).json({ errors: [{ msg: "Invalid password" }] });
-    }
+    const user = await authenticateUser(pool, req.body);
 
     req.session.user = user;
-    console.log(`Authenticated User: ${user}`);
+
+    const isManager = await UserService.getManagerByUserId(pool, user.id);
+    const isBarber = await UserService.getBarberByUserId(pool, user.id);
+    if (isManager) {
+      req.session.isManager = true;
+    }
+
+    if (isBarber) {
+      req.session.isBarber = true;
+    }
 
     res.status(200).json(user);
-  } catch (err) {
-    console.log(`Error Logging In: ${err}`);
-    res.status(500).json(err);
+
+    console.log("Authenticated User: ", user);
+  } catch (error) {
+    console.log("Failed login attempt");
+    next(error);
   }
 }
 
