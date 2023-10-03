@@ -12,6 +12,6 @@ router.post(
   BarbershopManagerAuthController.register
 );
 
-// router.post("/login", BarberAuthController.login);
+router.post("/login", BarbershopManagerAuthController.login);
 
 module.exports = router;

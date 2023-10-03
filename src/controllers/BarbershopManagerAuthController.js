@@ -1,18 +1,13 @@
-const {
-  UserAuthService,
-  UserService,
-  BarbershopService,
-  BarbershopAddressService,
-} = require("../services");
+const { BarbershopService, BarbershopAddressService } = require("../services");
 const { ConflictError } = require("../errors");
 const {
   validateAndCreateUser,
   startTransaction,
   commitTransaction,
   rollbackTransaction,
+  authenticateUser,
 } = require("../utils");
 const pool = require("../config/db");
-const bcrypt = require("bcrypt");
 
 async function register(req, res, next) {
   const client = await pool.connect();
@@ -42,11 +37,9 @@ async function register(req, res, next) {
     );
 
     await commitTransaction(client);
-    res
-      .status(201)
-      .json({
-        message: `Succesfully registered user: ${newUser.fullName}, and created ${barbershop.shopName}`,
-      });
+    res.status(201).json({
+      message: `Succesfully registered user: ${newUser.fullName}, and created ${barbershop.shopName}`,
+    });
   } catch (err) {
     console.log("Error registering: ", err);
     await rollbackTransaction(client);
@@ -56,29 +49,18 @@ async function register(req, res, next) {
   }
 }
 
-async function login(req, res) {
-  const { email, password } = req.body;
-  console.log(req.body);
+async function login(req, res, next) {
   try {
-    let user = await UserService.getUserByEmail(email);
-
-    if (!user) {
-      return res.status(401).json({ errors: [{ msg: "User not found" }] });
-    }
-
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordMatch) {
-      return res.status(401).json({ errors: [{ msg: "Invalid password" }] });
-    }
+    let user = await authenticateUser(pool, req.body);
 
     req.session.user = user;
-    console.log("Authenticated User: ", user);
+    req.session.isManager = true;
 
     res.status(200).json(user);
+    console.log("Authenticated User: ", user);
   } catch (err) {
     console.log(`Error Logging In: ${err}`);
-    res.status(500).json(err);
+    next(err);
   }
 }
 

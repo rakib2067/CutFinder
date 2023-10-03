@@ -1,6 +1,10 @@
 const UserService = require("../services/UserService");
 const UserAuthService = require("../services/UserAuthService");
-const { ConflictError } = require("../errors");
+const {
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
+} = require("../errors");
 const bcrypt = require("bcrypt");
 
 async function validateAndCreateUser(pool, userData) {
@@ -19,6 +23,22 @@ async function validateAndCreateUser(pool, userData) {
   return newUser;
 }
 
+async function authenticateUser(pool, userData) {
+  const { email, password } = userData;
+  let user = await UserService.getUserByEmail(pool, email);
+
+  if (!user) {
+    throw new NotFoundError("User");
+  }
+
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordMatch) {
+    throw new UnauthorizedError("Invalid Password");
+  }
+  return user;
+}
 module.exports = {
   validateAndCreateUser,
+  authenticateUser,
 };
