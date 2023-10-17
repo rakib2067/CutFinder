@@ -58,6 +58,15 @@ class BarbershopService {
       throw new Error(`Error updating barbershop: ${err}`);
     }
   }
+
+  static async getAllBarbershop() {
+    try {
+      const result = await db.query(`SELECT * FROM barbershops;`);
+      return result.rows.map((barbershop) => new Barbershop(barbershop));
+    } catch (err) {
+      throw new Error(`Error fetching all barbershops: ${err}`);
+    }
+  }
 }
 
 module.exports = BarbershopService;
