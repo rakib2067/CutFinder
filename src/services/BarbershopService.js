@@ -49,7 +49,7 @@ class BarbershopService {
 
     try {
       const result = await db.query(
-        `UPDATE barbershops SET ${fieldsToUpdateQuery} WHERE id = $${values.length} RETURNING *;`,
+        `UPDATE barbershops SET ${fieldsToUpdateQuery} WHERE barbershop_id = $${values.length} RETURNING *;`,
         values
       );
 
@@ -65,6 +65,18 @@ class BarbershopService {
       return result.rows.map((barbershop) => new Barbershop(barbershop));
     } catch (err) {
       throw new Error(`Error fetching all barbershops: ${err}`);
+    }
+  }
+
+  static async getBarbershop(barbershopID) {
+    try {
+      const result = await db.query(
+        `SELECT * FROM barbershops WHERE barbershop_id = $1;`,
+        [barbershopID]
+      );
+      return new Barbershop(result.rows[0]);
+    } catch (err) {
+      throw new Error(`Could not find barbershop: ${err}`);
     }
   }
 }
