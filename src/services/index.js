@@ -3,6 +3,7 @@ const UserService = require("./UserService");
 const BarbershopManagerService = require("./BarbershopManagerService");
 const BarbershopAddressService = require("./BarbershopAddressService");
 const BarbershopService = require("./BarbershopService");
+const EmailVerificationService = require("./EmailVerificationService");
 
 module.exports = {
   UserAuthService,
@@ -10,4 +11,5 @@ module.exports = {
   BarbershopService,
   BarbershopManagerService,
   BarbershopAddressService,
+  EmailVerificationService,
 };

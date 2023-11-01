@@ -5,6 +5,12 @@ async function register(req, res, next) {
   try {
     const newUser = await validateAndCreateUser(pool, req.body);
     console.log("Created new user: ", newUser);
+    //Verification service to send an email to the user
+    // Email will contain a token
+    // Store the token in redis or postgres
+    // The token can expire after a certain amount of time
+    // The email will contain a link to the endpoint for verification
+    // Accessing that email will set the users status to verified
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     console.log("Failed to register");

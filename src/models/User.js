@@ -4,6 +4,7 @@ class User {
     this.fullName = data.full_name;
     this.email = data.email;
     this.password = data.password;
+    this.verified = data.verified;
   }
 }
 
