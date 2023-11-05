@@ -1,19 +1,21 @@
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.forwardemail.net",
-  port: 465,
-  secure: true,
+  service: "gmail",
   auth: {
-    user: "REPLACE-WITH-YOUR-ALIAS@YOURDOMAIN.COM",
-    pass: "REPLACE-WITH-YOUR-GENERATED-PASSWORD",
+    user: process.env.SENDER_EMAIL,
+    pass: process.env.APP_PASSWORD,
   },
 });
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log("Ready for mailing: ", success);
+(async () => {
+  // Your asynchronous code here
+  try {
+    await transporter.verify();
+    console.log("Ready to send mail!");
+  } catch (err) {
+    console.log(`Error: Unable to connect to mail service: ${err}`);
   }
-});
+})();
+
+module.exports = transporter;

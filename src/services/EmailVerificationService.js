@@ -2,18 +2,43 @@ const crypto = require("crypto");
 
 class EmailVerificationService {
   static async createToken(redisClient, userId) {
-    //require bcrypt
-    const tokenKey = `verification:${userId}`;
-    const verificationToken = generateVerificationToken();
-    redisClient.set(tokenKey, verificationToken, "EX", 3600);
+    try {
+      const tokenKey = `verification:${userId}`;
+      const verificationToken = this.generateVerificationToken();
+      await redisClient.set(tokenKey, verificationToken, "EX", 3600);
+    } catch (error) {
+      throw new Error(`Error creating verification token: ${err}`);
+    }
   }
-}
 
-function generateVerificationToken() {
-  // Generate a secure random token of a specified length (e.g., 32 bytes, which will result in a 64-character hex string)
-  const tokenLength = 32;
-  const token = crypto.randomBytes(tokenLength).toString("hex");
-  return token;
+  static generateVerificationToken() {
+    // Generate a secure random token of a specified length (e.g., 32 bytes, which will result in a 64-character hex string)
+    const tokenLength = 32;
+    const token = crypto.randomBytes(tokenLength).toString("hex");
+    return token;
+  }
+
+  static async sendVerificationEmail(
+    transporter,
+    userEmail,
+    verificationToken
+  ) {
+    // Define the email message
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: userEmail,
+      subject: "Email Verification",
+      //TBD Send html with a button to link to verification endpoint
+      text: `Your verification token is: ${verificationToken}`,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log("Email sent:", info.response);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  }
 }
 
 module.exports = EmailVerificationService;
