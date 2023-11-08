@@ -17,6 +17,29 @@ class EmailVerificationService {
     const token = crypto.randomBytes(tokenLength).toString("hex");
     return token;
   }
+  static async validateToken(redisClient, userId, token) {
+    try {
+      const userVerificationTokenKey = `verification:${userId}`;
+      const tokenExists = await redis.exists(userVerificationTokenKey);
+      if (!tokenExists) {
+        return false;
+      }
+      const userVerificationToken = await redisClient.get(
+        userVerificationTokenKey
+      );
+      const isValid = userVerificationToken === token;
+
+      if (!isValid) {
+        return false;
+      }
+
+      await redisClient.del(userVerificationTokenKey);
+
+      return true;
+    } catch (err) {
+      console.log("Error validating verification token", err);
+    }
+  }
 
   static async sendVerificationEmail(
     transporter,
