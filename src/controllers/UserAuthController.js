@@ -1,8 +1,8 @@
-const pool = require('../config/db');
-const RedisClient = require('../config/redis-init');
-const transporter = require('../config/nodemailer');
-const { validateAndCreateUser, authenticateUser } = require('../utils');
-const { UserService, EmailVerificationService } = require('../services');
+const pool = require("../config/db");
+const RedisClient = require("../config/redis-init");
+const transporter = require("../config/nodemailer");
+const { validateAndCreateUser, authenticateUser } = require("../utils");
+const { UserService, EmailVerificationService } = require("../services");
 async function register(req, res, next) {
   try {
     const newUser = await validateAndCreateUser(
@@ -11,10 +11,10 @@ async function register(req, res, next) {
       transporter,
       req.body
     );
-    console.log('Created new user: ', newUser);
-    res.status(201).json({ message: 'User registered successfully' });
+    console.log("Created new user: ", newUser);
+    res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
-    console.log('Failed to register');
+    console.log("Failed to register");
     next(error);
   }
 }
@@ -37,28 +37,31 @@ async function login(req, res, next) {
 
     res.status(200).json(user);
 
-    console.log('Authenticated User: ', user);
+    console.log("Authenticated User: ", user);
   } catch (error) {
-    console.log('Failed login attempt');
+    console.log("Failed login attempt");
     next(error);
   }
 }
 
 async function verify(req, res, next) {
   try {
-    const { userId, token } = req.query;
+    const { userId, verificationToken } = req.params;
     const isTokenValid = await EmailVerificationService.validateToken(
       RedisClient,
       userId,
-      token
+      verificationToken
     );
     if (!isTokenValid) {
-      res.redirect('https://www.google.com'); //Temporary address for now
+      res.redirect("https://www.google.com"); //Temporary address for now
+      return;
     }
-    const frontendVerificationSuccessURL = 'https://www.google.com'; //Temporary address for now
-    res.redirect(frontendVerificationSuccessURL);
+    const frontendVerificationSuccessURL = "https://www.google.com"; //Temporary address for now
+    await UserService.updateUser(userId, { verified: true });
+    res.status(200).redirect(frontendVerificationSuccessURL);
+    return;
   } catch (error) {
-    console.log('Failed verification attempt');
+    console.log("Failed verification attempt");
     next(error);
   }
 }
