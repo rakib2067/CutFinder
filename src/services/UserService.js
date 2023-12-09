@@ -85,7 +85,7 @@ class UserService {
 
     try {
       const result = await db.query(
-        `UPDATE users SET ${fieldsToUpdateQuery} WHERE id = $${values.length} RETURNING *;`,
+        `UPDATE users SET ${fieldsToUpdateQuery} WHERE user_id = $${values.length} RETURNING *;`,
         values
       );
 

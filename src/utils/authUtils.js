@@ -1,13 +1,17 @@
-const UserService = require("../services/UserService");
-const UserAuthService = require("../services/UserAuthService");
+const {
+  UserAuthService,
+  UserService,
+  EmailVerificationService,
+} = require("../services/");
 const {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
 } = require("../errors");
+
 const bcrypt = require("bcrypt");
 
-async function validateAndCreateUser(pool, userData) {
+async function validateAndCreateUser(pool, redisClient, transporter, userData) {
   const { email, password } = userData;
   let user = await UserService.getUserByEmail(pool, email);
 
@@ -22,6 +26,19 @@ async function validateAndCreateUser(pool, userData) {
     pool,
     userData,
     hashedPassword
+  );
+
+  const verificationToken = await EmailVerificationService.createToken(
+    redisClient,
+    newUser.id
+  );
+
+  console.log("Stored token for user");
+
+  await EmailVerificationService.sendVerificationEmail(
+    transporter,
+    newUser,
+    verificationToken
   );
   return newUser;
 }
@@ -41,6 +58,7 @@ async function authenticateUser(pool, userData) {
   }
   return user;
 }
+
 module.exports = {
   validateAndCreateUser,
   authenticateUser,

@@ -5,7 +5,8 @@ CREATE TABLE users
     user_id serial PRIMARY KEY,
     full_name VARCHAR(200) NOT NULL,
     email VARCHAR(200) NOT NULL UNIQUE,
-    password VARCHAR(500) NOT NULL
+    password VARCHAR(500) NOT NULL,
+    verified BOOLEAN DEFAULT FALSE
 );
 
 DROP TABLE IF EXISTS barbershops;

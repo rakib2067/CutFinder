@@ -3,7 +3,6 @@ const cors = require("cors");
 
 const routes = require("./routes");
 const { session, errorHandler } = require("./middlewares");
-
 const server = express();
 
 server.use(express.json());
